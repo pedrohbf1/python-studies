@@ -1,16 +1,17 @@
-from app.database.db import Base
-from sqlalchemy import Column, Integer, String, DateTime, BigInteger
+from ..db import Base
+from sqlalchemy import Column, Integer, String, DateTime, ForeignKey
 from datetime import datetime, timezone
 from sqlalchemy.orm import relationship
 
-class Pessoa(Base): 
-    __tablename__ = 'pessoas'
+class Endereco(Base):
+    __tablename__ = 'enderecos'
 
     id = Column(Integer, primary_key=True, index=True)
-    nome = Column(String)
-    email = Column(String, unique=True)
-    telefone = Column(BigInteger, unique=True, )
+    rua = Column(String)
+    bairro = Column(String)
+    numero = Column(String)
+    pessoa_id = Column(Integer, ForeignKey('pessoas.id'))
     createdAt = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
     updatedAt = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc))
-
-    enderecos = relationship("Endereco", back_populates="pessoa")
+    
+    pessoa = relationship("Pessoa", back_populates='enderecos')
