@@ -9,8 +9,8 @@ class HealthResponse(BaseModel):
     status: str
     date: datetime
 
-@app.get("/", response_model=HealthResponse)
-def hello():
+@app.get("/", response_model=HealthResponse, tags=["Status"])
+def status():
     return HealthResponse(
         date=datetime.now(),
         status= "Alive"
