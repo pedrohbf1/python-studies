@@ -1,0 +1,39 @@
+version: "3.9"
+
+services:
+  db:
+    image: postgres:15
+    container_name: postgres_db
+    restart: always
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    ports:
+      - "5434:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  app:
+    build: . # aaaa
+    container_name: fastapi_app
+    restart: always # Reinicia automaticamente se o container parar
+    ports:
+      - "9090:3000"
+    env_file:
+      - .env # Carrega variáveis de ambiente a partir do arquivo .env
+    volumes:
+      - .:/app # Sincroniza a pasta atual do projeto com /app dentro do container
+    depends_on:
+      - db # Garante que o serviço "db" seja iniciado antes do app
+    command:
+      uvicorn app.main:app --host 0.0.0.0 --port 3000 --reload
+      # Comando executado ao iniciar o container:
+      # - Executa o servidor Uvicorn
+      # - Importa a variável "app" do módulo "app.main"
+      # - Escuta em 0.0.0.0 (aceita conexões externas)
+      # - Usa a porta 3000 dentro do container
+      # - Ativa reload automático (modo desenvolvimento)
+
+volumes:
+  postgres_data:
