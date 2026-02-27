@@ -1,6 +1,7 @@
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 from app.database.models.pessoas import Pessoa
-from .pessoas_types import getPessoa
+from app.database.models.enderecos import Endereco
+from .pessoas_types import getPessoa, PessoaCreate
 from typing import Literal
 from sqlalchemy.sql.elements import ColumnElement
 from typing import Any
@@ -12,10 +13,10 @@ class PessoasRepository:
         self.db = db
 
     def listar(self):
-        return self.db.query(Pessoa)
+        return self.db.query(Pessoa).options(joinedload(Pessoa.enderecos)).all()
     
     def listarId(self, id: int):
-        return self.db.query(Pessoa).filter(Pessoa.id == id).first()
+        return self.db.query(Pessoa).options(joinedload(Pessoa.enderecos)).filter(Pessoa.id == id).first()
         
     
     def getByFilter(self, value: str | int, filter: Literal['email', 'telefone']):
@@ -29,9 +30,9 @@ class PessoasRepository:
 
         filterValue = field_map[filter]
         
-        return self.db.query(Pessoa).filter(filterValue == value).first()
+        return self.db.query(Pessoa).options(joinedload(Pessoa.enderecos)).filter(filterValue == value).first()
     
-    def criar(self, pessoa_data: getPessoa):
+    def criar(self, pessoa_data: PessoaCreate):
         # Cria uma instância do model Pessoa a partir dos dados recebidos
         nova_pessoa = Pessoa(
             nome=pessoa_data.nome,
@@ -41,6 +42,18 @@ class PessoasRepository:
         self.db.add(nova_pessoa)       # adiciona no DB
         self.db.commit()               # salva
         self.db.refresh(nova_pessoa)   # atualiza a instância com dados do DB (como id)
+        if pessoa_data.enderecos:
+            for endereco_data in pessoa_data.enderecos:
+                novo_endereco = Endereco(
+                    rua=endereco_data.rua,
+                    bairro=endereco_data.bairro,
+                    numero=endereco_data.numero,
+                    pessoa_id=nova_pessoa.id
+                )
+                self.db.add(novo_endereco)
+            self.db.commit()            # salva todos os endereços
+            self.db.refresh(nova_pessoa, attribute_names=["enderecos"])  # atualiza lista de endereços
+
         return nova_pessoa
 
     def atualizar_pessoa(self, id: int, pessoa_data: getPessoa):
@@ -54,8 +67,7 @@ class PessoasRepository:
         self.db.commit()
 
         # Retorna a pessoa atualizada
-        pessoa_atualizada = self.db.query(Pessoa).filter(Pessoa.id == id).first()
-        return pessoa_atualizada
+        return self.db.query(Pessoa).options(joinedload(Pessoa.enderecos)).filter(Pessoa.id == id).first()
 
     def apagar_pessoa(self, id:int) -> Dict[str, str]:
         self.db.execute(delete(Pessoa).where(Pessoa.id == id))

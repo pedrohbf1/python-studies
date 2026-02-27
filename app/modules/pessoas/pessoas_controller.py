@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, Body
 from sqlalchemy.orm import Session
-from .pessoas_types import getPessoa
+from .pessoas_types import getPessoa, PessoaCreate
 from app.database.db import get_db
 from app.modules.pessoas.pessoas_repository import PessoasRepository
 from app.modules.pessoas.pessoas_service import PessoasService
@@ -23,7 +23,7 @@ async def listarPorId(id: int, service: PessoasService = Depends(get_service)):
     return service.listar_pessoas_id(id)
 
 @router.post("/", response_model=getPessoa, summary="Criar pessoa")
-async def criar(service: PessoasService = Depends(get_service), pessoa: getPessoa = Body(getPessoa)):
+async def criar(service: PessoasService = Depends(get_service), pessoa: PessoaCreate = Body(PessoaCreate)):
     return service.criar(pessoa)
 
 @router.put("/{id}", response_model=getPessoa, summary="Atualizar pessoa por id")

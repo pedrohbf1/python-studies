@@ -1,5 +1,5 @@
 from app.modules.pessoas.pessoas_repository import PessoasRepository
-from .pessoas_types import getPessoa
+from .pessoas_types import getPessoa, PessoaCreate
 from fastapi import HTTPException, status
 from typing import Literal
 
@@ -13,7 +13,7 @@ class PessoasService:
     def listar_pessoas_id(self, id: int):
         return self.repo.listarId(id)
     
-    def criar(self, pessoa_data: getPessoa):
+    def criar(self, pessoa_data: PessoaCreate):
         checks: list[tuple[Literal['email','telefone'], str | int]] = [
             ('email', pessoa_data.email),
             ('telefone', pessoa_data.telefone)
