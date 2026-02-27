@@ -1,2 +1,2 @@
 # type: ignore
-from .pessoas import pessoas 
+from .pessoas import Pessoa 
