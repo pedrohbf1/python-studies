@@ -1,2 +1,26 @@
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Virtual environments
+venv/
 .env
 .env.*
+
+# Alembic / Migrations (opcional, se quiser versionar só o code, não o banco)
+alembic/versions/
+
+# IDEs
+.vscode/
+.idea/
+
+# Logs
+*.log
+
+# Temp folder
+/temp/
+
+# macOS
+.DS_Store
