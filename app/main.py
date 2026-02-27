@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from datetime import datetime
 from pydantic import BaseModel
+from app.modules.pessoas.pessoas_controller import router as pessoas_router
 
 PORT = 3000
 app = FastAPI()
@@ -15,6 +16,8 @@ def status():
         date=datetime.now(),
         status= "Alive"
     )
+
+app.include_router(pessoas_router)
 
 if __name__ == "__main__":
     import uvicorn
