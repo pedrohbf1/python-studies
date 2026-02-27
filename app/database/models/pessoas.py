@@ -3,7 +3,7 @@ from sqlalchemy import Column, Integer, String, DateTime
 from datetime import datetime
 from datetime import datetime, timezone
 
-class pessoas(Base): 
+class Pessoa(Base): 
     __tablename__ = 'pessoas'
 
     id = Column(Integer, primary_key=True, index=True)
